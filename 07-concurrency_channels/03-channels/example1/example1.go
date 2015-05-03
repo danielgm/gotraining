@@ -10,6 +10,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os/exec"
 	"sync"
 	"time"
 )
@@ -30,8 +31,8 @@ func main() {
 	wg.Add(2)
 
 	// Launch two players.
-	go player("Serena", court)
-	go player("Venus", court)
+	go player("Serena", "Princess", "hu!", court)
+	go player("Venus", "Victoria", "arg!", court)
 
 	// Start the set.
 	court <- 1
@@ -41,7 +42,7 @@ func main() {
 }
 
 // player simulates a person playing the game of tennis.
-func player(name string, court chan int) {
+func player(name string, voiceName string, sound string, court chan int) {
 	// Schedule the call to Done to tell main we are done.
 	defer wg.Done()
 
@@ -67,6 +68,11 @@ func player(name string, court chan int) {
 		// Display and then increment the hit count by one.
 		fmt.Printf("Player %s Hit %d\n", name, ball)
 		ball++
+
+		// Make some noise when you hit the ball.
+		exec.Command("say", "-v", voiceName, sound).Run()
+
+		time.Sleep(time.Duration(1) * time.Second)
 
 		// Hit the ball back to the opposing player.
 		court <- ball
